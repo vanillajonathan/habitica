@@ -36,7 +36,7 @@ describe('mongodb', () => {
       const mongoLibOverride = requireAgain(pathToMongoLib);
 
       const options = mongoLibOverride.getDefaultConnectionOptions();
-      expect(options).to.have.all.keys(['useNewUrlParser', 'useUnifiedTopology']);
+      expect(options).to.eql({});
     });
 
     it('returns production config when IS_PROD is true', () => {
@@ -44,7 +44,7 @@ describe('mongodb', () => {
       const mongoLibOverride = requireAgain(pathToMongoLib);
 
       const options = mongoLibOverride.getDefaultConnectionOptions();
-      expect(options).to.have.all.keys(['useNewUrlParser', 'useUnifiedTopology', 'keepAlive', 'keepAliveInitialDelay']);
+      expect(options).to.have.all.keys(['keepAlive', 'keepAliveInitialDelay']);
     });
   });
 });

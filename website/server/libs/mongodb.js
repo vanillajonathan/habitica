@@ -23,10 +23,7 @@ export function getDevelopmentConnectionUrl (originalConnectionUrl) {
 }
 
 export function getDefaultConnectionOptions () {
-  const commonOptions = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  };
+  const commonOptions = {};
 
   return !IS_PROD ? commonOptions : {
     // See https://mongoosejs.com/docs/connections.html#keepAlive
