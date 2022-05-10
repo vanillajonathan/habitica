@@ -668,7 +668,7 @@ api.sendPrivateMessage = {
     if (!receiver.flags.verifiedUsername) delete receiver.auth.local.username;
 
     const objections = sender.getObjectionsToInteraction('send-private-message', receiver);
-    if (objections.length > 0 && !sender.isAdmin()) throw new NotAuthorized(res.t(objections[0]));
+    if (objections.length > 0 && !sender.hasPermission('moderator')) throw new NotAuthorized(res.t(objections[0]));
 
     const messageSent = await sentMessage(sender, receiver, message, res.t);
 
@@ -714,8 +714,8 @@ api.transferGems = {
       throw new NotAuthorized(res.t('badAmountOfGemsToSend'));
     }
 
-    receiver.balance += amount;
-    sender.balance -= amount;
+    await receiver.updateBalance(amount, 'gift_receive', sender._id, sender.profile.name);
+    await sender.updateBalance(-amount, 'gift_send', sender._id, receiver.profile.name);
     // @TODO necessary? Also saved when sending the inbox message
     const promises = [receiver.save(), sender.save()];
     await Promise.all(promises);

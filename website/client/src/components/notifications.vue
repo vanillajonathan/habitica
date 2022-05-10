@@ -115,6 +115,7 @@ import { MAX_LEVEL_HARD_CAP } from '@/../../common/script/constants';
 import notifications from '@/mixins/notifications';
 import guide from '@/mixins/guide';
 import { CONSTANTS, setLocalSetting } from '@/libs/userlocalManager';
+import * as Analytics from '@/libs/analytics';
 
 import yesterdailyModal from './tasks/yesterdailyModal';
 import newStuff from './news/modal';
@@ -243,6 +244,22 @@ const NOTIFICATIONS = {
       achievement: 'mountColorAchievs', // defined in website/common/script/content/achievements.js
     },
   },
+  ACHIEVEMENT_ZODIAC_ZOOKEEPER: {
+    achievement: true,
+    label: $t => `${$t('achievement')}: ${$t('achievementZodiacZookeeper')}`,
+    modalId: 'generic-achievement',
+    data: {
+      achievement: 'zodiacZookeeper',
+    },
+  },
+  ACHIEVEMENT_BIRDS_OF_A_FEATHER: {
+    achievement: true,
+    label: $t => `${$t('achievement')}: ${$t('achievementBirdsOfAFeather')}`,
+    modalId: 'generic-achievement',
+    data: {
+      achievement: 'birdsOfAFeather',
+    },
+  },
 };
 
 export default {
@@ -301,7 +318,6 @@ export default {
       'WON_CHALLENGE',
       // achievement notifications
       'ACHIEVEMENT',
-      'GENERIC_ACHIEVEMENT', // what's the different between this and 'ACHIEVEMENT'?
       'ACHIEVEMENT_CHALLENGE_JOINED',
       'ACHIEVEMENT_GUILD_JOINED',
       'ACHIEVEMENT_INVITED_FRIEND',
@@ -640,11 +656,21 @@ export default {
     },
     async runCronAction () {
       // Run Cron
-      await axios.post('/api/v4/cron');
-
-      // Reset daily analytics actions
-      setLocalSetting(CONSTANTS.keyConstants.TASKS_SCORED_COUNT, 0);
-      setLocalSetting(CONSTANTS.keyConstants.TASKS_CREATED_COUNT, 0);
+      const response = await axios.post('/api/v4/cron');
+      if (response.status === 200) {
+        // Reset daily analytics actions
+        setLocalSetting(CONSTANTS.keyConstants.TASKS_SCORED_COUNT, 0);
+        setLocalSetting(CONSTANTS.keyConstants.TASKS_CREATED_COUNT, 0);
+      } else {
+        // Note a failed cron event, for our records and investigation
+        Analytics.track({
+          eventName: 'cron failed',
+          eventAction: 'cron failed',
+          eventCategory: 'behavior',
+          hitType: 'event',
+          responseCode: response.status,
+        }, { trackOnClient: true });
+      }
 
       // Sync
       await Promise.all([
@@ -726,9 +752,6 @@ export default {
           case 'ACHIEVEMENT_PARTY_ON':
           case 'ACHIEVEMENT_PARTY_UP':
           case 'ACHIEVEMENT_ULTIMATE_GEAR':
-          case 'GENERIC_ACHIEVEMENT':
-            this.showNotificationWithModal(notification);
-            break;
           case 'ACHIEVEMENT_QUESTS': {
             const { achievement } = notification.data;
             const upperCaseAchievement = achievement.charAt(0).toUpperCase() + achievement.slice(1);

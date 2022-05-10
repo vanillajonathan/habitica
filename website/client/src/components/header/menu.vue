@@ -224,7 +224,7 @@
             </div>
             <router-link
               class="nav-link"
-              :to="{name: 'groupPlan'}"
+              :to="groupPlanTopLink"
             >
               {{ $t('group') }}
             </router-link>
@@ -298,6 +298,14 @@
             </router-link>
             <div class="topbar-dropdown">
               <router-link
+                v-if="user.permissions.fullAccess ||
+                  user.permissions.userSupport || user.permissions.newsPoster"
+                class="topbar-dropdown-item dropdown-item"
+                :to="{name: 'adminPanel'}"
+              >
+                Admin Panel
+              </router-link>
+              <router-link
                 class="topbar-dropdown-item dropdown-item"
                 :to="{name: 'faq'}"
               >
@@ -311,8 +319,8 @@
               </router-link>
               <a
                 class="topbar-dropdown-item dropdown-item"
-                @click.prevent="openBugReportModal()"
                 target="_blank"
+                @click.prevent="openBugReportModal()"
               >
                 {{ $t('reportBug') }}
               </a>
@@ -780,6 +788,13 @@ export default {
       groupPlans: 'groupPlans.data',
       modalStack: 'modalStack',
     }),
+    groupPlanTopLink () {
+      if (!this.groupPlans || this.groupPlans.length === 0) return { name: 'groupPlan' };
+      return {
+        name: 'groupPlanDetailTaskInformation',
+        params: { groupId: this.groupPlans[0]._id },
+      };
+    },
   },
   mounted () {
     this.getUserGroupPlans();
@@ -839,7 +854,6 @@ export default {
       element.classList.add('down');
       element.lastChild.style.maxHeight = `${element.lastChild.scrollHeight}px`;
     },
-
     closeMenu () {
       Array.from(document.getElementsByClassName('droppable')).forEach(droppableElement => {
         this.closeDropdown(droppableElement);
