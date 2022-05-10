@@ -161,17 +161,17 @@ const NOTIFICATIONS = {
       modalText: null, // data filled in handleUserNotifications
     },
   },
-  ACHIEVEMENT_CHALLENGE_JOINED: {
+  CHALLENGE_JOINED_ACHIEVEMENT: {
     achievement: true,
     label: $t => `${$t('achievement')}: ${$t('joinedChallenge')}`,
     modalId: 'joined-challenge',
   },
-  ACHIEVEMENT_GUILD_JOINED: {
+  GUILD_JOINED_ACHIEVEMENT: {
     label: $t => `${$t('achievement')}: ${$t('joinedGuild')}`,
     achievement: true,
     modalId: 'joined-guild',
   },
-  ACHIEVEMENT_INVITED_FRIEND: {
+  INVITED_FRIEND_ACHIEVEMENT: {
     achievement: true,
     label: $t => `${$t('achievement')}: ${$t('invitedFriend')}`,
     modalId: 'invited-friend',
@@ -196,7 +196,7 @@ const NOTIFICATIONS = {
       achievement: 'partyUp',
     },
   },
-  ACHIEVEMENT_ULTIMATE_GEAR: {
+  ULTIMATE_GEAR_ACHIEVEMENT: {
     achievement: true,
     label: $t => `${$t('achievement')}: ${$t('gearAchievementNotification')}`,
     modalId: 'ultimate-gear',
@@ -242,22 +242,6 @@ const NOTIFICATIONS = {
     modalId: 'generic-achievement',
     data: {
       achievement: 'mountColorAchievs', // defined in website/common/script/content/achievements.js
-    },
-  },
-  ACHIEVEMENT_ZODIAC_ZOOKEEPER: {
-    achievement: true,
-    label: $t => `${$t('achievement')}: ${$t('achievementZodiacZookeeper')}`,
-    modalId: 'generic-achievement',
-    data: {
-      achievement: 'zodiacZookeeper',
-    },
-  },
-  ACHIEVEMENT_BIRDS_OF_A_FEATHER: {
-    achievement: true,
-    label: $t => `${$t('achievement')}: ${$t('achievementBirdsOfAFeather')}`,
-    modalId: 'generic-achievement',
-    data: {
-      achievement: 'birdsOfAFeather',
     },
   },
 };
@@ -318,14 +302,14 @@ export default {
       'WON_CHALLENGE',
       // achievement notifications
       'ACHIEVEMENT',
-      'ACHIEVEMENT_CHALLENGE_JOINED',
-      'ACHIEVEMENT_GUILD_JOINED',
-      'ACHIEVEMENT_INVITED_FRIEND',
+      'CHALLENGE_JOINED_ACHIEVEMENT',
+      'GUILD_JOINED_ACHIEVEMENT',
+      'INVITED_FRIEND_ACHIEVEMENT',
       'ACHIEVEMENT_PARTY_ON',
       'ACHIEVEMENT_PARTY_UP',
-      'ACHIEVEMENT_REBIRTH',
-      'ACHIEVEMENT_STREAK',
-      'ACHIEVEMENT_ULTIMATE_GEAR',
+      'REBIRTH_ACHIEVEMENT',
+      'STREAK_ACHIEVEMENT',
+      'ULTIMATE_GEAR_ACHIEVEMENT',
       // stable achievement notifications
       'ACHIEVEMENT_STABLE',
       // quest series notifications
@@ -735,23 +719,23 @@ export default {
           case 'WON_CHALLENGE':
             this.$root.$emit('habitica:won-challenge', notification);
             break;
-          case 'ACHIEVEMENT_REBIRTH':
+          case 'REBIRTH_ACHIEVEMENT':
             this.playSound('Achievement_Unlocked');
             this.$root.$emit('bv::show::modal', 'rebirth');
             break;
-          case 'ACHIEVEMENT_STREAK':
+          case 'STREAK_ACHIEVEMENT':
             this.text(`${this.$t('streaks')}: ${this.user.achievements.streak}`, () => {
               this.$root.$emit('bv::show::modal', 'streak');
             }, this.user.preferences.suppressModals.streak);
             this.playSound('Achievement_Unlocked');
             break;
           case 'NEW_CONTRIBUTOR_LEVEL':
-          case 'ACHIEVEMENT_CHALLENGE_JOINED':
-          case 'ACHIEVEMENT_GUILD_JOINED':
-          case 'ACHIEVEMENT_INVITED_FRIEND':
+          case 'CHALLENGE_JOINED_ACHIEVEMENT':
+          case 'GUILD_JOINED_ACHIEVEMENT':
+          case 'INVITED_FRIEND_ACHIEVEMENT':
           case 'ACHIEVEMENT_PARTY_ON':
           case 'ACHIEVEMENT_PARTY_UP':
-          case 'ACHIEVEMENT_ULTIMATE_GEAR':
+          case 'ULTIMATE_GEAR_ACHIEVEMENT':
           case 'ACHIEVEMENT_QUESTS': {
             const { achievement } = notification.data;
             const upperCaseAchievement = achievement.charAt(0).toUpperCase() + achievement.slice(1);
