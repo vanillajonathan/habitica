@@ -152,13 +152,13 @@ const NOTIFICATIONS = {
     sticky: true,
   },
   // achievement notifications
-  ACHIEVEMENT: { // data filled in handleUserNotifications
+  ACHIEVEMENT: { // null data filled in handleUserNotifications
     achievement: true,
     modalId: 'generic-achievement',
-    label: null, // data filled in handleUserNotifications
+    label: null,
     data: {
       message: $t => $t('achievement'),
-      modalText: null, // data filled in handleUserNotifications
+      modalText: null,
     },
   },
   CHALLENGE_JOINED_ACHIEVEMENT: {
@@ -201,39 +201,34 @@ const NOTIFICATIONS = {
     label: $t => `${$t('achievement')}: ${$t('gearAchievementNotification')}`,
     modalId: 'ultimate-gear',
   },
-  // stable achievements
   ACHIEVEMENT_STABLE: {
     achievement: true,
     modalId: 'generic-achievement',
     data: {
-      achievement: 'stableAchievs', // defined in website/common/script/content/achievements.js
+      achievement: 'stableAchievs',
     },
   },
-  // quest achievements
   ACHIEVEMENT_QUESTS: {
     achievement: true,
-    // label: $t => `${$t('achievement')}: ${$t('achievementQuestSeries')}`,
     modalId: 'generic-achievement',
     data: {
-      achievement: 'questSeriesAchievs', // defined in website/common/script/content/achievements.js
+      achievement: 'questSeriesAchievs',
     },
   },
-  // animal set collection achievements
   ACHIEVEMENT_ANIMAL_SET: {
     achievement: true,
     label: $t => `${$t('achievement')}: ${$t('achievementAnimalSet')}`,
     modalId: 'generic-achievement',
     data: {
-      achievement: 'animalSetAchievs', // defined in website/common/script/content/achievements.js
+      achievement: 'animalSetAchievs',
     },
   },
-  // pet and mount color collection achievement noticfications
   ACHIEVEMENT_PET_COLOR: {
     achievement: true,
     label: $t => `${$t('achievement')}: ${$t('achievementPetColor')}`,
     modalId: 'generic-achievement',
     data: {
-      achievement: 'petColorAchievs', // defined in website/common/script/content/achievements.js
+      achievement: 'petColorAchievs',
     },
   },
   ACHIEVEMENT_MOUNT_COLOR: {
@@ -241,7 +236,7 @@ const NOTIFICATIONS = {
     label: $t => `${$t('achievement')}: ${$t('achievementMountColor')}`,
     modalId: 'generic-achievement',
     data: {
-      achievement: 'mountColorAchievs', // defined in website/common/script/content/achievements.js
+      achievement: 'mountColorAchievs',
     },
   },
 };
@@ -310,13 +305,9 @@ export default {
       'REBIRTH_ACHIEVEMENT',
       'STREAK_ACHIEVEMENT',
       'ULTIMATE_GEAR_ACHIEVEMENT',
-      // stable achievement notifications
       'ACHIEVEMENT_STABLE',
-      // quest series notifications
       'ACHIEVEMENT_QUESTS',
-      // animal set achievements
       'ACHIEVEMENT_ANIMAL_SET',
-      // pet and mount color collection achievement notifications
       'ACHIEVEMENT_PET_COLOR',
       'ACHIEVEMENT_MOUNT_COLOR',
     ].forEach(type => {
@@ -488,9 +479,6 @@ export default {
       }
       if (!data.message && config && config.data && config.data.message) {
         data.message = config.data.message(this.$t);
-        // if (!config.label && data.label) {
-        //   config.label = data.label;
-        // }
       }
 
       this.notificationData = data;
@@ -736,6 +724,8 @@ export default {
           case 'ACHIEVEMENT_PARTY_ON':
           case 'ACHIEVEMENT_PARTY_UP':
           case 'ULTIMATE_GEAR_ACHIEVEMENT':
+            this.showNotificationWithModal(notification);
+            break;
           case 'ACHIEVEMENT_QUESTS': {
             const { achievement } = notification.data;
             const upperCaseAchievement = achievement.charAt(0).toUpperCase() + achievement.slice(1);
@@ -791,10 +781,6 @@ export default {
             Vue.set(this.user.achievements, achievement, true);
             break;
           }
-          case 'CRON':
-            // Not needed because it's shown already by the userHp and userMp watchers
-            // Keeping an empty block so that it gets read
-            break;
           case 'LOGIN_INCENTIVE':
             if (this.user.flags.tour.intro === this.TOUR_END && this.user.flags.welcomed) {
               this.notificationData = notification.data;
