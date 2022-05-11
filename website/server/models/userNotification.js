@@ -6,7 +6,6 @@ import baseModel from '../libs/baseModel';
 
 const NOTIFICATION_TYPES = [
   // general notifications
-  'BOSS_DAMAGE', // Not used currently but kept to avoid validation errors
   'CARD_RECEIVED',
   'CRON',
   'DROP_CAP_REACHED',
@@ -42,15 +41,13 @@ const NOTIFICATION_TYPES = [
   'REBIRTH_ACHIEVEMENT',
   'STREAK_ACHIEVEMENT',
   'ULTIMATE_GEAR_ACHIEVEMENT',
-  // stable achievements
   'ACHIEVEMENT_STABLE',
-  // quest achievements
   'ACHIEVEMENT_QUESTS',
-  // animal set achievements
   'ACHIEVEMENT_ANIMAL_SET',
-  // pet and mount color collection achievement notifications
   'ACHIEVEMENT_PET_COLOR',
   'ACHIEVEMENT_MOUNT_COLOR',
+  // Deprecated notification types. Can be removed once old data is cleaned out
+  'BOSS_DAMAGE', // deprecated
   'ACHIEVEMENT_ALL_YOUR_BASE', // deprecated
   'ACHIEVEMENT_BACK_TO_BASICS', // deprecated
   'ACHIEVEMENT_JUST_ADD_WATER', // deprecated
