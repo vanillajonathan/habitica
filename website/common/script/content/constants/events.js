@@ -22,6 +22,11 @@ export const EVENTS = {
     season: 'fall',
     gear: true,
   },
+  fall_extra_gems: {
+    start: '2022-09-20T08:00-04:00',
+    end: '2022-09-29T20:00-04:00',
+    gemsPromo,
+  },
   beforeGala: {
     start: '2022-07-31T20:00-04:00',
     end: '2022-09-20T08:00-04:00',
