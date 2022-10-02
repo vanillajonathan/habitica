@@ -80,8 +80,10 @@
       >
       </div>
     </div>
-    <div class="col-12">
-      <router-view />
+    <div class="col-12 d-flex justify-content-center">
+      <div :class="{'settings-content': applyNarrowView}">
+        <router-view />
+      </div>
     </div>
   </div>
 </template>
@@ -115,6 +117,11 @@
   .svg-gifts {
     width: 3.5rem;
   }
+
+  .settings-content {
+    flex: 0 0 684px;
+    max-width: unset;
+  }
 </style>
 
 <script>
@@ -146,6 +153,9 @@ export default {
     promo () {
       if (!this.currentEvent || !this.currentEvent.promo) return 'none';
       return this.currentEvent.promo;
+    },
+    applyNarrowView () {
+      return !['subscription', 'transactions'].includes(this.$route.name);
     },
   },
   methods: {
