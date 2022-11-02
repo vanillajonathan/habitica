@@ -415,28 +415,78 @@ describe('Apple Payments', () => {
       }
     });
 
-    it('errors when a user is using the same subscription', async () => {
-      payments.createSubscription.restore();
-      user = new User();
-      await user.save();
-      iap.getPurchaseData.restore();
+    describe('does not apply multiple times', async () => {
+      it('errors when a user is using the same subscription', async () => {
+        user = new User();
+        await user.save();
+        payments.createSubscription.restore();
+        iap.getPurchaseData.restore();
+        iapGetPurchaseDataStub = sinon.stub(iap, 'getPurchaseData')
+          .returns([{
+            expirationDate: moment.utc().add({ day: 1 }).toDate(),
+            productId: sku,
+            transactionId: token,
+            originalTransactionId: token,
+          }]);
 
-      iapGetPurchaseDataStub = sinon.stub(iap, 'getPurchaseData')
-        .returns([{
-          expirationDate: moment.utc().add({ day: 1 }).toDate(),
-          productId: sku,
-          transactionId: token,
-          originalTransactionId: token,
-        }]);
+        await applePayments.subscribe(sku, user, receipt, headers, nextPaymentProcessing);
 
-      await applePayments.subscribe(sku, user, receipt, headers, nextPaymentProcessing);
+        await expect(applePayments.subscribe(sku, user, receipt, headers, nextPaymentProcessing))
+          .to.eventually.be.rejected.and.to.eql({
+            httpCode: 401,
+            name: 'NotAuthorized',
+            message: applePayments.constants.RESPONSE_ALREADY_USED,
+          });
+      });
 
-      await expect(applePayments.subscribe(sku, user, receipt, headers, nextPaymentProcessing))
-        .to.eventually.be.rejected.and.to.eql({
-          httpCode: 401,
-          name: 'NotAuthorized',
-          message: applePayments.constants.RESPONSE_ALREADY_USED,
-        });
+      it('errors when a user is using a rebill of the same subscription', async () => {
+        user = new User();
+        await user.save();
+        payments.createSubscription.restore();
+        iap.getPurchaseData.restore();
+        iapGetPurchaseDataStub = sinon.stub(iap, 'getPurchaseData')
+          .returns([{
+            expirationDate: moment.utc().add({ day: 1 }).toDate(),
+            productId: sku,
+            transactionId: `${token}renew`,
+            originalTransactionId: token,
+          }]);
+
+        await applePayments.subscribe(sku, user, receipt, headers, nextPaymentProcessing);
+
+        await expect(applePayments.subscribe(sku, user, receipt, headers, nextPaymentProcessing))
+          .to.eventually.be.rejected.and.to.eql({
+            httpCode: 401,
+            name: 'NotAuthorized',
+            message: applePayments.constants.RESPONSE_ALREADY_USED,
+          });
+      });
+
+      it('errors when a different user is using the subscription', async () => {
+        user = new User();
+        await user.save();
+        payments.createSubscription.restore();
+        iap.getPurchaseData.restore();
+        iapGetPurchaseDataStub = sinon.stub(iap, 'getPurchaseData')
+          .returns([{
+            expirationDate: moment.utc().add({ day: 1 }).toDate(),
+            productId: sku,
+            transactionId: token,
+            originalTransactionId: token,
+          }]);
+
+        await applePayments.subscribe(sku, user, receipt, headers, nextPaymentProcessing);
+
+        const secondUser = new User();
+        await expect(applePayments.subscribe(
+          sku, secondUser, receipt, headers, nextPaymentProcessing,
+        ))
+          .to.eventually.be.rejected.and.to.eql({
+            httpCode: 401,
+            name: 'NotAuthorized',
+            message: applePayments.constants.RESPONSE_ALREADY_USED,
+          });
+      });
     });
   });
 
