@@ -9,9 +9,9 @@ export default function calculateSubscriptionTerminationDate (
   const defaultRemainingDays = purchasedPlan.customerId === groupPlanCustomerId
     ? DEFAULT_REMAINING_DAYS_FOR_GROUP_PLAN : DEFAULT_REMAINING_DAYS;
 
-  const remaining = nextBill
-    ? moment(nextBill).diff(new Date(), 'days', true)
-    : defaultRemainingDays;
+  const estimatedNextBill = moment().add(purchasedPlan.consecutive.offset, 'months').startOf('month');
+  const billDate = nextBill ? moment().max(nextBill, estimatedNextBill) : estimatedNextBill;
+  const remaining = Math.max(moment(billDate).diff(new Date(), 'days', true), defaultRemainingDays);
 
   const extraMonths = Math.max(purchasedPlan.extraMonths, 0);
   const extraDays = Math.ceil(30.5 * extraMonths);
